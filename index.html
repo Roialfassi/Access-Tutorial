@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Access Tutorial - From Zero to Hero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90A4;
+            --primary-dark: #357386;
+            --secondary: #F5A962;
+            --accent: #7CB342;
+            --bg: #FFF9F0;
+            --card: #FFFFFF;
+            --text: #2D3748;
+            --text-light: #718096;
+            --success: #48BB78;
+            --warning: #ED8936;
+            --code-bg: #1E293B;
+            --sidebar-w: 300px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: var(--sidebar-w); height: 100vh;
+            background: linear-gradient(180deg, #2D3748 0%, #1A202C 100%);
+            overflow-y: auto; z-index: 100; padding-bottom: 40px;
+        }
+        .sidebar-header {
+            padding: 25px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .sidebar-header h1 { color: white; font-size: 1.2rem; font-weight: 800; }
+        .sidebar-header p { color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-top: 5px; }
+        
+        .nav-section { padding: 15px 12px 8px; }
+        .nav-section-title {
+            color: var(--secondary); font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin-bottom: 8px;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+            color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 8px;
+            margin: 2px 0; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .nav-item .step-num {
+            width: 24px; height: 24px; background: rgba(255,255,255,0.15); border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;
+        }
+        .nav-item.active .step-num { background: rgba(255,255,255,0.3); }
+        
+        .main { margin-left: var(--sidebar-w); min-height: 100vh; }
+        .header {
+            background: white; padding: 20px 40px; border-bottom: 2px solid #E2E8F0;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .progress-container { display: flex; align-items: center; gap: 15px; }
+        .progress-bar { flex: 1; height: 10px; background: #E2E8F0; border-radius: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 20px; transition: width 0.5s; }
+        .progress-text { font-weight: 700; color: var(--primary); min-width: 50px; }
+        
+        .content { max-width: 850px; margin: 0 auto; padding: 40px; }
+        .lesson { display: none; }
+        .lesson.active { display: block; }
+        
+        .lesson-header { margin-bottom: 35px; }
+        .lesson-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, var(--secondary), #F6AD55);
+            color: white; padding: 6px 14px; border-radius: 25px;
+            font-size: 0.75rem; font-weight: 700; margin-bottom: 12px;
+        }
+        .lesson-title { font-size: 2.2rem; font-weight: 800; color: var(--text); margin-bottom: 12px; line-height: 1.2; }
+        .lesson-intro { font-size: 1.1rem; color: var(--text-light); padding-left: 18px; border-left: 4px solid var(--primary); }
+        
+        .step-card {
+            background: white; border-radius: 16px; padding: 28px; margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid transparent; transition: all 0.3s;
+        }
+        .step-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .step-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+        .step-number {
+            width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 800; flex-shrink: 0;
+        }
+        .step-title { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+        .step-content { padding-left: 60px; }
+        .step-content p { margin-bottom: 16px; font-size: 1rem; }
+        
+        .instruction-box {
+            background: linear-gradient(135deg, #EBF8FF, #E6FFFA); border-radius: 12px;
+            padding: 20px; margin: 16px 0; border-left: 4px solid var(--primary);
+        }
+        .instruction-box h4 { color: var(--primary-dark); font-size: 0.95rem; margin-bottom: 10px; }
+        .instruction-list { list-style: none; }
+        .instruction-list li { padding: 8px 0 8px 30px; position: relative; font-size: 0.95rem; }
+        .instruction-list li::before { content: "→"; position: absolute; left: 0; color: var(--primary); font-weight: 700; }
+        
+        .code-block {
+            background: var(--code-bg); border-radius: 12px; padding: 20px; margin: 16px 0; overflow-x: auto;
+        }
+        .code-block-header { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .code-block-title { color: var(--secondary); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .code-block code {
+            font-family: 'Fira Code', monospace; font-size: 0.9rem; color: #E2E8F0;
+            display: block; white-space: pre-wrap; line-height: 1.7;
+        }
+        .code-block .keyword { color: #F472B6; }
+        .code-block .string { color: #A5D6A7; }
+        .code-block .comment { color: #64748B; }
+        .code-block .function { color: #93C5FD; }
+        .code-block .number { color: #FDBA74; }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #F0FFF4, #E6FFFA); border-radius: 12px;
+            padding: 20px; margin: 20px 0; border-left: 4px solid var(--success);
+        }
+        .tip-box h4 { color: var(--success); font-size: 0.95rem; margin-bottom: 8px; }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border-radius: 12px;
+            padding: 20px; margin: 20px 0; border-left: 4px solid var(--warning);
+        }
+        .warning-box h4 { color: var(--warning); font-size: 0.95rem; margin-bottom: 8px; }
+        
+        .data-table {
+            width: 100%; border-collapse: collapse; margin: 16px 0;
+            border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .data-table th { background: var(--primary); color: white; padding: 12px 16px; text-align: left; font-weight: 700; }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid #E2E8F0; background: white; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: #F7FAFC; }
+        
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 25px; border-top: 2px solid #E2E8F0; }
+        .nav-btn {
+            display: flex; align-items: center; gap: 10px; padding: 14px 24px;
+            border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: all 0.3s; border: none; font-family: 'Nunito', sans-serif;
+        }
+        .nav-btn.prev { background: #E2E8F0; color: var(--text); }
+        .nav-btn.prev:hover { background: #CBD5E0; }
+        .nav-btn.next { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .nav-btn.next:hover { transform: translateX(4px); box-shadow: 0 4px 15px rgba(74,144,164,0.4); }
+        
+        .completion-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg, var(--success), #38A169);
+            color: white; padding: 14px 20px; border-radius: 12px; font-weight: 700; margin: 25px 0;
+        }
+        
+        .quiz-section {
+            background: linear-gradient(135deg, #FAF5FF, #F3E8FF); border-radius: 16px;
+            padding: 28px; margin: 25px 0; border: 2px solid #D6BCFA;
+        }
+        .quiz-section h3 { color: #6B46C1; margin-bottom: 16px; }
+        .quiz-option {
+            display: block; background: white; padding: 14px 20px; border-radius: 10px;
+            margin: 10px 0; cursor: pointer; border: 2px solid transparent;
+            transition: all 0.2s; font-weight: 600;
+        }
+        .quiz-option:hover { border-color: #9F7AEA; transform: translateX(4px); }
+        .quiz-option.correct { border-color: var(--success); background: #F0FFF4; }
+        .quiz-option.incorrect { border-color: #FC8181; background: #FFF5F5; }
+        
+        .highlight { background: linear-gradient(135deg, #FEFCE8, #FEF9C3); padding: 2px 8px; border-radius: 6px; font-weight: 700; color: #92400E; }
+        kbd { background: #E2E8F0; padding: 3px 8px; border-radius: 5px; font-family: 'Fira Code', monospace; font-size: 0.8rem; border: 1px solid #CBD5E0; box-shadow: 0 2px 0 #CBD5E0; }
+        
+        .visual-diagram { background: white; border: 2px dashed #CBD5E0; border-radius: 12px; padding: 25px; margin: 20px 0; text-align: center; }
+        .diagram-caption { margin-top: 12px; font-size: 0.85rem; color: var(--text-light); font-style: italic; }
+        
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
+        .menu-toggle {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 200;
+            width: 45px; height: 45px; background: var(--primary); border-radius: 12px;
+            align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 1.3rem;
+        }
+        
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .menu-toggle { display: flex !important; }
+            .content { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>📊 MS Access Tutorial</h1>
+            <p>From Beginner to Pro</p>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🚀 Getting Started</div>
+            <a class="nav-item active" onclick="showLesson(0)"><span class="step-num">1</span> What is Microsoft Access?</a>
+            <a class="nav-item" onclick="showLesson(1)"><span class="step-num">2</span> Opening Access</a>
+            <a class="nav-item" onclick="showLesson(2)"><span class="step-num">3</span> The Access Interface</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📋 Tables</div>
+            <a class="nav-item" onclick="showLesson(3)"><span class="step-num">4</span> What are Tables?</a>
+            <a class="nav-item" onclick="showLesson(4)"><span class="step-num">5</span> Creating Your First Table</a>
+            <a class="nav-item" onclick="showLesson(5)"><span class="step-num">6</span> Data Types Explained</a>
+            <a class="nav-item" onclick="showLesson(6)"><span class="step-num">7</span> Primary Keys</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔗 Relationships</div>
+            <a class="nav-item" onclick="showLesson(7)"><span class="step-num">8</span> What are Relationships?</a>
+            <a class="nav-item" onclick="showLesson(8)"><span class="step-num">9</span> Creating Relationships</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔍 Queries</div>
+            <a class="nav-item" onclick="showLesson(9)"><span class="step-num">10</span> What are Queries?</a>
+            <a class="nav-item" onclick="showLesson(10)"><span class="step-num">11</span> Simple Select Query</a>
+            <a class="nav-item" onclick="showLesson(11)"><span class="step-num">12</span> Adding Criteria</a>
+            <a class="nav-item" onclick="showLesson(12)"><span class="step-num">13</span> Introduction to SQL</a>
+            <a class="nav-item" onclick="showLesson(13)"><span class="step-num">14</span> More SQL Examples</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📄 Forms & Reports</div>
+            <a class="nav-item" onclick="showLesson(14)"><span class="step-num">15</span> Creating Forms</a>
+            <a class="nav-item" onclick="showLesson(15)"><span class="step-num">16</span> Creating Reports</a>
+            <a class="nav-item" onclick="showLesson(16)"><span class="step-num">17</span> Customizing Reports</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📤 Exporting</div>
+            <a class="nav-item" onclick="showLesson(17)"><span class="step-num">18</span> Export to Excel/PDF/CSV</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">💻 C# Connection</div>
+            <a class="nav-item" onclick="showLesson(18)"><span class="step-num">19</span> Why Connect to C#?</a>
+            <a class="nav-item" onclick="showLesson(19)"><span class="step-num">20</span> Connection Strings</a>
+            <a class="nav-item" onclick="showLesson(20)"><span class="step-num">21</span> Reading Data</a>
+            <a class="nav-item" onclick="showLesson(21)"><span class="step-num">22</span> Insert, Update, Delete</a>
+            <a class="nav-item" onclick="showLesson(22)"><span class="step-num">23</span> Complete Example</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <header class="header">
+            <div class="progress-container">
+                <span style="font-weight: 700; color: var(--text-light);">Progress:</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 4%;"></div>
+                </div>
+                <span class="progress-text" id="progressText">1/23</span>
+            </div>
+        </header>
+
+        <div class="content" id="lessonContent"></div>
+    </main>
+
+    <script>
+        const lessons = [
+            // Lesson 0: Introduction
+            {
+                badge: "📚 Module 1 • Getting Started",
+                title: "What is Microsoft Access?",
+                intro: "Let's start at the very beginning. Don't worry - we'll take this one tiny step at a time!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Think of Access Like a Super Organized Filing Cabinet</h3></div>
+                    <div class="step-content">
+                        <p>Imagine you have a big filing cabinet at home. Inside, you have folders for different things:</p>
+                        <ul class="instruction-list">
+                            <li>A folder for your family's contact information</li>
+                            <li>A folder for your movie collection</li>
+                            <li>A folder for your school grades</li>
+                        </ul>
+                        <p><strong>Microsoft Access is like a digital filing cabinet</strong> that lives on your computer. But it's much smarter!</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">What Makes Access Special?</h3></div>
+                    <div class="step-content">
+                        <p>Access is a <span class="highlight">database program</span>. A database is just a fancy word for "organized information."</p>
+                        <div class="tip-box">
+                            <h4>💡 Simple Explanation</h4>
+                            <p><strong>Database</strong> = A collection of information organized in a way that makes it easy to find, change, and use.</p>
+                        </div>
+                        <p>Here's what Access can do:</p>
+                        <ul class="instruction-list">
+                            <li><strong>Store</strong> lots of information (names, numbers, dates)</li>
+                            <li><strong>Find</strong> specific information quickly</li>
+                            <li><strong>Sort</strong> information (alphabetically, by date)</li>
+                            <li><strong>Create reports</strong> that look professional</li>
+                            <li><strong>Connect</strong> to other programs (like C#!)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Real Life Examples</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Who Uses It</th><th>What They Store</th></tr></thead>
+                            <tbody>
+                                <tr><td>🏫 Schools</td><td>Student names, grades, attendance</td></tr>
+                                <tr><td>🏪 Small Shops</td><td>Products, prices, customer orders</td></tr>
+                                <tr><td>📚 Libraries</td><td>Books, borrowers, due dates</td></tr>
+                                <tr><td>👤 You!</td><td>Anything you want to organize!</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="quiz-section">
+                    <h3>🎯 Quick Check - Did You Understand?</h3>
+                    <p>What is a database?</p>
+                    <div class="quiz-option" onclick="checkAnswer(this, true)">A) Organized information that's easy to find and use</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">B) A type of video game</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">C) A social media website</div>
+                </div>`
+            },
+            // Lesson 1: Opening Access
+            {
+                badge: "📚 Module 1 • Getting Started",
+                title: "Opening Microsoft Access",
+                intro: "Let's learn how to open Access and create your very first database file!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Finding Access on Your Computer</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Follow These Steps:</h4>
+                            <ul class="instruction-list">
+                                <li>Click the <strong>Start button</strong> (Windows icon in bottom-left)</li>
+                                <li>Type <kbd>Access</kbd> using your keyboard</li>
+                                <li>Look for <strong>Microsoft Access</strong> in the results</li>
+                                <li>Click on it to open</li>
+                            </ul>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 Can't Find It?</h4>
+                            <p>Access comes with Microsoft Office. If you don't see it, ask your teacher or IT person to install it.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Creating a New Database</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Create Your First Database:</h4>
+                            <ul class="instruction-list">
+                                <li>Click on <strong>"Blank database"</strong></li>
+                                <li>A box will appear asking for a name</li>
+                                <li>Type a name like <span class="highlight">MyFirstDatabase</span></li>
+                                <li>Click the folder icon to choose where to save</li>
+                                <li>Click the <strong>"Create"</strong> button</li>
+                            </ul>
+                        </div>
+                        <div class="warning-box">
+                            <h4>⚠️ Important!</h4>
+                            <p>Remember where you save your database! A good place is your <strong>Documents</strong> folder.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">What is an .accdb File?</h3></div>
+                    <div class="step-content">
+                        <p>Your database file will end with <span class="highlight">.accdb</span></p>
+                        <p>For example: <code>MyFirstDatabase.accdb</code></p>
+                        <div class="tip-box">
+                            <h4>💡 Fun Fact</h4>
+                            <p><strong>.accdb</strong> stands for "Access Database". It's like how Word documents end in .docx!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ Great job! You've opened Access and created your first database file!</div>`
+            },
+            // Lesson 2: Interface
+            {
+                badge: "📚 Module 1 • Getting Started",
+                title: "The Access Interface",
+                intro: "Let's learn the different parts of the Access window. Like learning the rooms in a new house!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">The Main Parts of Access</h3></div>
+                    <div class="step-content">
+                        <div class="visual-diagram">
+                            <div style="background: #2D3748; color: white; padding: 10px; border-radius: 8px 8px 0 0;"><strong>1️⃣ RIBBON</strong> - Buttons and tools (File, Home, Create)</div>
+                            <div style="display: flex; min-height: 150px;">
+                                <div style="width: 180px; background: #E2E8F0; padding: 12px; border-right: 2px solid #CBD5E0;"><strong>2️⃣ NAVIGATION PANE</strong><br><br>📋 Tables<br>🔍 Queries<br>📄 Forms<br>📊 Reports</div>
+                                <div style="flex: 1; background: #F7FAFC; padding: 12px; display: flex; align-items: center; justify-content: center;"><strong>3️⃣ WORK AREA</strong><br>(Where you work!)</div>
+                            </div>
+                            <div style="background: #E2E8F0; padding: 10px; border-radius: 0 0 8px 8px;"><strong>4️⃣ STATUS BAR</strong> - Helpful information</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">The Ribbon (Top Area)</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Tab Name</th><th>What It's For</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>File</strong></td><td>Save, open, close, print</td></tr>
+                                <tr><td><strong>Home</strong></td><td>Basic tools (copy, paste, filter)</td></tr>
+                                <tr><td><strong>Create</strong></td><td>Make new tables, queries, forms, reports</td></tr>
+                                <tr><td><strong>External Data</strong></td><td>Import/Export data</td></tr>
+                                <tr><td><strong>Database Tools</strong></td><td>Advanced options</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="tip-box"><h4>💡 Try This!</h4><p>Click on each tab to see different buttons. Don't worry - just clicking won't break anything!</p></div>
+                    </div>
+                </div>
+                <div class="quiz-section">
+                    <h3>🎯 Quick Check</h3>
+                    <p>Where do you find the "Create" button to make new tables?</p>
+                    <div class="quiz-option" onclick="checkAnswer(this, true)">A) In the Ribbon at the top</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">B) In the Navigation Pane</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">C) In the Status Bar</div>
+                </div>`
+            },
+            // Lesson 3: Tables Introduction
+            {
+                badge: "📋 Module 2 • Tables",
+                title: "What are Tables?",
+                intro: "Tables are the heart of Access. All your information lives in tables!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">A Table is Like a Spreadsheet</h3></div>
+                    <div class="step-content">
+                        <p>If you've used Excel, a table will look familiar. It has:</p>
+                        <ul class="instruction-list">
+                            <li><strong>Columns</strong> (going down) - called "Fields" in Access</li>
+                            <li><strong>Rows</strong> (going across) - called "Records" in Access</li>
+                        </ul>
+                        <div class="visual-diagram">
+                            <table class="data-table">
+                                <thead><tr><th>StudentID</th><th>FirstName</th><th>LastName</th><th>Grade</th></tr></thead>
+                                <tbody>
+                                    <tr><td>1</td><td>Emma</td><td>Wilson</td><td>10</td></tr>
+                                    <tr><td>2</td><td>Liam</td><td>Johnson</td><td>11</td></tr>
+                                    <tr><td>3</td><td>Olivia</td><td>Brown</td><td>10</td></tr>
+                                </tbody>
+                            </table>
+                            <p class="diagram-caption">↑ Columns are FIELDS | ← Rows are RECORDS →</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Understanding Fields and Records</h3></div>
+                    <div class="step-content">
+                        <div class="tip-box">
+                            <h4>💡 Easy Way to Remember</h4>
+                            <p><strong>Field</strong> = A category of information (like "Name" or "Age")</p>
+                            <p><strong>Record</strong> = One complete entry (like one person's information)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">One Table = One Topic</h3></div>
+                    <div class="step-content">
+                        <p>A good rule: <strong>Each table should be about ONE thing.</strong></p>
+                        <table class="data-table">
+                            <thead><tr><th>✅ Good Table Design</th><th>❌ Bad Table Design</th></tr></thead>
+                            <tbody>
+                                <tr><td>Students table (just student info)</td><td>Everything table (students + grades + classes)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+            },
+            // Lesson 4: Creating Tables
+            {
+                badge: "📋 Module 2 • Tables",
+                title: "Creating Your First Table",
+                intro: "Time to create a real table! We'll make a Students table together.",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Open Design View</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Follow These Steps:</h4>
+                            <ul class="instruction-list">
+                                <li>Click the <strong>Create</strong> tab in the Ribbon</li>
+                                <li>Click <strong>Table Design</strong></li>
+                            </ul>
+                        </div>
+                        <p>A new window opens. This is <strong>Design View</strong> - where you plan your table's structure!</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Add Your Fields</h3></div>
+                    <div class="step-content">
+                        <p>Add these fields:</p>
+                        <table class="data-table">
+                            <thead><tr><th>Field Name</th><th>Data Type</th></tr></thead>
+                            <tbody>
+                                <tr><td>StudentID</td><td>AutoNumber</td></tr>
+                                <tr><td>FirstName</td><td>Short Text</td></tr>
+                                <tr><td>LastName</td><td>Short Text</td></tr>
+                                <tr><td>BirthDate</td><td>Date/Time</td></tr>
+                                <tr><td>Email</td><td>Short Text</td></tr>
+                                <tr><td>GradeLevel</td><td>Number</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="tip-box">
+                            <h4>💡 What is AutoNumber?</h4>
+                            <p>AutoNumber automatically gives each record a unique number (1, 2, 3...). You don't type it yourself!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Save Your Table</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Save the Table:</h4>
+                            <ul class="instruction-list">
+                                <li>Press <kbd>Ctrl</kbd> + <kbd>S</kbd></li>
+                                <li>Type: <span class="highlight">tblStudents</span></li>
+                                <li>Click <strong>OK</strong></li>
+                            </ul>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 Why "tbl" at the Start?</h4>
+                            <p>Adding "tbl" helps you know it's a table. Many programmers use: tbl=Table, qry=Query, frm=Form, rpt=Report</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ Amazing! You just created your first table!</div>`
+            },
+            // Lesson 5: Data Types
+            {
+                badge: "📋 Module 2 • Tables",
+                title: "Data Types Explained",
+                intro: "Learn when to use each data type. Picking the right one is important!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Common Data Types</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Data Type</th><th>Use For</th><th>Examples</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Short Text</strong></td><td>Names, addresses, codes</td><td>"John", "123 Main St"</td></tr>
+                                <tr><td><strong>Long Text</strong></td><td>Long descriptions, notes</td><td>Paragraphs of text</td></tr>
+                                <tr><td><strong>Number</strong></td><td>Quantities for math</td><td>42, 3.14, -10</td></tr>
+                                <tr><td><strong>Currency</strong></td><td>Money values</td><td>$19.99, $1,234.56</td></tr>
+                                <tr><td><strong>Date/Time</strong></td><td>Dates and times</td><td>3/15/2024, 2:30 PM</td></tr>
+                                <tr><td><strong>Yes/No</strong></td><td>True/false, checkboxes</td><td>✓ or blank</td></tr>
+                                <tr><td><strong>AutoNumber</strong></td><td>Automatic unique IDs</td><td>1, 2, 3, 4...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Important Tips</h3></div>
+                    <div class="step-content">
+                        <div class="warning-box">
+                            <h4>⚠️ Phone Numbers = Short Text!</h4>
+                            <p>Even though phone numbers look like numbers, use <strong>Short Text</strong>! Phone numbers can have dashes, start with 0, and you don't do math with them.</p>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 Money = Currency</h4>
+                            <p>Always use <strong>Currency</strong> for money! It prevents rounding errors.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="quiz-section">
+                    <h3>🎯 Quick Check</h3>
+                    <p>What data type should you use for a student's email address?</p>
+                    <div class="quiz-option" onclick="checkAnswer(this, true)">A) Short Text</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">B) Number</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false)">C) Long Text</div>
+                </div>`
+            },
+            // Lesson 6: Primary Keys
+            {
+                badge: "📋 Module 2 • Tables",
+                title: "Primary Keys",
+                intro: "Every table needs a special field called a Primary Key. Let's learn why!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">What is a Primary Key?</h3></div>
+                    <div class="step-content">
+                        <p>A <strong>Primary Key</strong> is a field that uniquely identifies each record.</p>
+                        <div class="tip-box">
+                            <h4>💡 Think of It Like...</h4>
+                            <p>Your <strong>Student ID number</strong> at school - no two students have the same one!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Why Do We Need Primary Keys?</h3></div>
+                    <div class="step-content">
+                        <p>Imagine you have two students named "John Smith". How do you tell them apart?</p>
+                        <table class="data-table">
+                            <thead><tr><th>StudentID</th><th>FirstName</th><th>LastName</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>101</strong></td><td>John</td><td>Smith</td></tr>
+                                <tr><td><strong>102</strong></td><td>John</td><td>Smith</td></tr>
+                            </tbody>
+                        </table>
+                        <p>The <strong>StudentID</strong> (101 vs 102) tells them apart!</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Rules for Primary Keys</h3></div>
+                    <div class="step-content">
+                        <ul class="instruction-list">
+                            <li><strong>Unique</strong> - No duplicates allowed</li>
+                            <li><strong>Not empty</strong> - Every record must have one</li>
+                            <li><strong>Never change</strong> - Once set, don't change it</li>
+                        </ul>
+                        <div class="warning-box">
+                            <h4>⚠️ Bad Primary Key Choices</h4>
+                            <p><strong>Names</strong> - People can have the same name<br>
+                            <strong>Phone/Email</strong> - People change these</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 7: Relationships Introduction
+            {
+                badge: "🔗 Module 3 • Relationships",
+                title: "What are Relationships?",
+                intro: "Learn how to connect tables together to make your database more powerful!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Why Connect Tables?</h3></div>
+                    <div class="step-content">
+                        <p>Instead of one giant messy table, use <strong>separate tables</strong> that connect to each other:</p>
+                        <div class="visual-diagram">
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                                <div style="background: #C6F6D5; padding: 15px; border-radius: 10px; min-width: 120px;"><strong>📋 Students</strong><br><small>StudentID (🔑)<br>FirstName<br>LastName</small></div>
+                                <div style="background: #BEE3F8; padding: 15px; border-radius: 10px; min-width: 120px;"><strong>📚 Classes</strong><br><small>ClassID (🔑)<br>ClassName<br>Teacher</small></div>
+                                <div style="background: #FEEBC8; padding: 15px; border-radius: 10px; min-width: 120px;"><strong>📝 Enrollments</strong><br><small>EnrollmentID (🔑)<br>StudentID<br>ClassID<br>Grade</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Primary Keys and Foreign Keys</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Primary Key 🔑</strong></td><td>The unique identifier in its OWN table</td></tr>
+                                <tr><td><strong>Foreign Key 🔗</strong></td><td>A field that points to a Primary Key in ANOTHER table</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+            },
+            // Lesson 8: Creating Relationships
+            {
+                badge: "🔗 Module 3 • Relationships",
+                title: "Creating Relationships",
+                intro: "Let's connect two tables together step by step!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Open the Relationships Window</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Open Relationships:</h4>
+                            <ul class="instruction-list">
+                                <li>Click the <strong>Database Tools</strong> tab</li>
+                                <li>Click <strong>Relationships</strong></li>
+                                <li>A new window will open</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Draw the Relationship</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Connect Tables:</h4>
+                            <ul class="instruction-list">
+                                <li>Click and hold on <strong>StudentID</strong> in tblStudents</li>
+                                <li>Drag it to <strong>StudentID</strong> in tblEnrollments</li>
+                                <li>Release the mouse button</li>
+                                <li>Check <strong>Enforce Referential Integrity</strong></li>
+                                <li>Click <strong>Create</strong></li>
+                            </ul>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 What is Referential Integrity?</h4>
+                            <p>It prevents mistakes! You can't add an enrollment for a student that doesn't exist.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ Congratulations! Your tables are now connected!</div>`
+            },
+            // Lesson 9: Queries Introduction
+            {
+                badge: "🔍 Module 4 • Queries",
+                title: "What are Queries?",
+                intro: "Queries help you find, filter, and organize your data. Like asking questions to your database!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">A Query is a Question</h3></div>
+                    <div class="step-content">
+                        <p>Imagine asking your database questions like:</p>
+                        <ul class="instruction-list">
+                            <li>"Show me all students in Grade 10"</li>
+                            <li>"Who has a birthday in March?"</li>
+                            <li>"List all products that cost more than $50"</li>
+                        </ul>
+                        <p>A <strong>query</strong> is how you ask these questions!</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Types of Queries</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Query Type</th><th>What It Does</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Select Query</strong></td><td>Finds and displays data (most common!)</td></tr>
+                                <tr><td><strong>Action Query</strong></td><td>Changes data (update, delete, add)</td></tr>
+                                <tr><td><strong>Parameter Query</strong></td><td>Asks for input when you run it</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Queries Don't Change Your Data</h3></div>
+                    <div class="step-content">
+                        <div class="tip-box">
+                            <h4>💡 Safe to Experiment!</h4>
+                            <p>Select Queries only SHOW data - they don't change or delete anything! Your original data stays safe.</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 10: Simple Select Query
+            {
+                badge: "🔍 Module 4 • Queries",
+                title: "Simple Select Query",
+                intro: "Let's create your first query using the Query Designer!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Open Query Designer</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Create a New Query:</h4>
+                            <ul class="instruction-list">
+                                <li>Click <strong>Create</strong> tab → <strong>Query Design</strong></li>
+                                <li>In "Show Table" dialog, double-click <strong>tblStudents</strong></li>
+                                <li>Click <strong>Close</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Add Fields to Your Query</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Add Fields:</h4>
+                            <ul class="instruction-list">
+                                <li>In the table (top), <strong>double-click</strong> on <strong>FirstName</strong></li>
+                                <li>Double-click <strong>LastName</strong></li>
+                                <li>Double-click <strong>GradeLevel</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Run the Query!</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Execute Your Query:</h4>
+                            <ul class="instruction-list">
+                                <li>Click the <strong>Run</strong> button (red exclamation mark <strong>!</strong>)</li>
+                                <li>Or press <kbd>F5</kbd></li>
+                                <li>Save as <span class="highlight">qryStudentList</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ Awesome! You just created your first query!</div>`
+            },
+            // Lesson 11: Adding Criteria
+            {
+                badge: "🔍 Module 4 • Queries",
+                title: "Adding Criteria (Filters)",
+                intro: "Learn to filter your results to find exactly what you need!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">What are Criteria?</h3></div>
+                    <div class="step-content">
+                        <p><strong>Criteria</strong> are conditions that filter your results. Like saying:</p>
+                        <ul class="instruction-list">
+                            <li>"Only show me Grade 10 students"</li>
+                            <li>"Only show products under $50"</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Add a Simple Criteria</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Filter for Grade 10:</h4>
+                            <ul class="instruction-list">
+                                <li>Open your query in <strong>Design View</strong></li>
+                                <li>Find the <strong>GradeLevel</strong> column</li>
+                                <li>Click in the <strong>Criteria</strong> row</li>
+                                <li>Type: <span class="highlight">10</span></li>
+                                <li>Run the query!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Comparison Operators</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr></thead>
+                            <tbody>
+                                <tr><td>=</td><td>Equals</td><td>=10 or just 10</td></tr>
+                                <tr><td>&gt;</td><td>Greater than</td><td>&gt;10</td></tr>
+                                <tr><td>&lt;</td><td>Less than</td><td>&lt;10</td></tr>
+                                <tr><td>&gt;=</td><td>Greater or equal</td><td>&gt;=10</td></tr>
+                                <tr><td>&lt;&gt;</td><td>Not equal</td><td>&lt;&gt;10</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+            },
+            // Lesson 12: Introduction to SQL
+            {
+                badge: "🔍 Module 4 • Queries",
+                title: "Introduction to SQL",
+                intro: "Behind every query is SQL code. Let's learn this powerful language!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">What is SQL?</h3></div>
+                    <div class="step-content">
+                        <p><strong>SQL</strong> (Structured Query Language) is a language for talking to databases.</p>
+                        <div class="tip-box">
+                            <h4>💡 Pronunciation</h4>
+                            <p>SQL is pronounced "S-Q-L" or "Sequel" - both are correct!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">The Basic SELECT Statement</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">SQL Structure</span></div>
+                            <code><span class="keyword">SELECT</span> <span class="comment">-- What columns you want</span>
+<span class="keyword">FROM</span>   <span class="comment">-- Which table</span>
+<span class="keyword">WHERE</span>  <span class="comment">-- Filter conditions (optional)</span>
+<span class="keyword">ORDER BY</span> <span class="comment">-- How to sort (optional)</span></code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Your First SQL Query</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">SQL</span></div>
+                            <code><span class="keyword">SELECT</span> FirstName, LastName, GradeLevel
+<span class="keyword">FROM</span> tblStudents
+<span class="keyword">WHERE</span> GradeLevel = <span class="number">10</span>
+<span class="keyword">ORDER BY</span> LastName <span class="keyword">ASC</span>;</code>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 Breaking It Down</h4>
+                            <p><strong>SELECT</strong> = I want these columns<br>
+                            <strong>FROM</strong> = Get them from this table<br>
+                            <strong>WHERE</strong> = Only these records<br>
+                            <strong>ORDER BY</strong> = Sort this way<br>
+                            <strong>;</strong> = End of statement</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 13: More SQL Examples
+            {
+                badge: "🔍 Module 4 • Queries",
+                title: "More SQL Examples",
+                intro: "Let's practice more SQL with useful examples!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Multiple Conditions (AND/OR)</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">AND / OR</span></div>
+                            <code><span class="comment">-- Grade 10 AND name starts with E</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tblStudents
+<span class="keyword">WHERE</span> GradeLevel = <span class="number">10</span> 
+  <span class="keyword">AND</span> FirstName <span class="keyword">LIKE</span> <span class="string">'E*'</span>;
+
+<span class="comment">-- Grade 10 OR Grade 11</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tblStudents
+<span class="keyword">WHERE</span> GradeLevel = <span class="number">10</span> 
+  <span class="keyword">OR</span> GradeLevel = <span class="number">11</span>;</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">COUNT, SUM, AVG</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">Aggregate Functions</span></div>
+                            <code><span class="comment">-- Count all students</span>
+<span class="keyword">SELECT</span> <span class="function">COUNT</span>(*) <span class="keyword">AS</span> TotalStudents
+<span class="keyword">FROM</span> tblStudents;
+
+<span class="comment">-- Count students per grade</span>
+<span class="keyword">SELECT</span> GradeLevel, <span class="function">COUNT</span>(*) <span class="keyword">AS</span> StudentCount
+<span class="keyword">FROM</span> tblStudents
+<span class="keyword">GROUP BY</span> GradeLevel;</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ Amazing! You now know the basics of SQL!</div>`
+            },
+            // Lesson 14: Creating Forms
+            {
+                badge: "📄 Module 5 • Forms & Reports",
+                title: "Creating Forms",
+                intro: "Forms make data entry easy and user-friendly!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Why Use Forms?</h3></div>
+                    <div class="step-content">
+                        <p>Tables are great for storing data, but forms provide:</p>
+                        <ul class="instruction-list">
+                            <li>A friendly interface for entering data</li>
+                            <li>One record at a time (less overwhelming)</li>
+                            <li>Labels that explain each field</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">The Quick Way</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Create Form Instantly:</h4>
+                            <ul class="instruction-list">
+                                <li>Click on <strong>tblStudents</strong> in Navigation Pane</li>
+                                <li>Click <strong>Create</strong> tab → <strong>Form</strong></li>
+                                <li>Done! Access creates a form automatically!</li>
+                                <li>Save as <span class="highlight">frmStudents</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Navigation Buttons</h3></div>
+                    <div class="step-content">
+                        <p>At the bottom of the form:</p>
+                        <ul class="instruction-list">
+                            <li><strong>|◄</strong> First record</li>
+                            <li><strong>◄ ►</strong> Previous/Next</li>
+                            <li><strong>►|</strong> Last record</li>
+                            <li><strong>►*</strong> New record</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            // Lesson 15: Creating Reports
+            {
+                badge: "📄 Module 5 • Forms & Reports",
+                title: "Creating Reports",
+                intro: "Reports let you create professional printable documents from your data!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Reports vs Queries</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Query</th><th>Report</th></tr></thead>
+                            <tbody>
+                                <tr><td>Shows data on screen</td><td>Formatted for printing</td></tr>
+                                <tr><td>Plain table format</td><td>Professional layout</td></tr>
+                                <tr><td>For finding data</td><td>For sharing information</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Quick Report</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Create Report Instantly:</h4>
+                            <ul class="instruction-list">
+                                <li>Click <strong>tblStudents</strong> in Navigation Pane</li>
+                                <li>Click <strong>Create</strong> tab → <strong>Report</strong></li>
+                                <li>A formatted report appears!</li>
+                                <li>Save as <span class="highlight">rptStudentList</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 16: Customizing Reports
+            {
+                badge: "📄 Module 5 • Forms & Reports",
+                title: "Customizing Reports",
+                intro: "Make your reports look professional with grouping and formatting!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Report Sections</h3></div>
+                    <div class="step-content">
+                        <table class="data-table">
+                            <thead><tr><th>Section</th><th>What It's For</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Report Header</strong></td><td>Title, logo (once at top)</td></tr>
+                                <tr><td><strong>Page Header</strong></td><td>Column titles (every page)</td></tr>
+                                <tr><td><strong>Detail</strong></td><td>The actual data rows</td></tr>
+                                <tr><td><strong>Page Footer</strong></td><td>Page numbers (every page)</td></tr>
+                                <tr><td><strong>Report Footer</strong></td><td>Grand totals (end of report)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Add Grouping</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Group by GradeLevel:</h4>
+                            <ul class="instruction-list">
+                                <li>Open report in <strong>Design View</strong></li>
+                                <li>Click <strong>Design</strong> tab → <strong>Group & Sort</strong></li>
+                                <li>Click <strong>Add a group</strong></li>
+                                <li>Select <strong>GradeLevel</strong></li>
+                            </ul>
+                        </div>
+                        <p>Now students are organized by grade!</p>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ You can now create professional reports!</div>`
+            },
+            // Lesson 17: Exporting
+            {
+                badge: "📤 Module 6 • Exporting",
+                title: "Export to Excel/PDF/CSV",
+                intro: "Share your Access data in different formats!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Export to Excel</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Export to Excel:</h4>
+                            <ul class="instruction-list">
+                                <li>Select your table/query in Navigation Pane</li>
+                                <li>Click <strong>External Data</strong> tab</li>
+                                <li>Click <strong>Excel</strong></li>
+                                <li>Choose where to save</li>
+                                <li>Check <strong>"Export data with formatting"</strong></li>
+                                <li>Click <strong>OK</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Export to PDF</h3></div>
+                    <div class="step-content">
+                        <div class="instruction-box">
+                            <h4>📋 Export to PDF:</h4>
+                            <ul class="instruction-list">
+                                <li>Select your report</li>
+                                <li>Click <strong>External Data</strong> → <strong>PDF or XPS</strong></li>
+                                <li>Choose location and click <strong>Publish</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Export to CSV</h3></div>
+                    <div class="step-content">
+                        <p><strong>CSV</strong> = Comma Separated Values (works with almost any program!)</p>
+                        <div class="instruction-box">
+                            <h4>📋 Export to CSV:</h4>
+                            <ul class="instruction-list">
+                                <li>Click <strong>External Data</strong> → <strong>Text File</strong></li>
+                                <li>Name with .csv extension</li>
+                                <li>Select <strong>Delimited</strong> → <strong>Comma</strong></li>
+                                <li>Check <strong>"Include Field Names"</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge">✅ You now know how to export data in multiple formats!</div>`
+            },
+            // Lesson 18: C# Introduction
+            {
+                badge: "💻 Module 7 • C# Connection",
+                title: "Why Connect to C#?",
+                intro: "Take your database to the next level with programming!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">What is C#?</h3></div>
+                    <div class="step-content">
+                        <p><strong>C#</strong> (pronounced "C Sharp") is a programming language made by Microsoft.</p>
+                        <p>You can build: Windows apps, Web apps, Mobile apps, Games (Unity uses C#!)</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Why Connect Access to C#?</h3></div>
+                    <div class="step-content">
+                        <ul class="instruction-list">
+                            <li>Build custom applications with your database</li>
+                            <li>Create better user interfaces</li>
+                            <li>Add features Access doesn't have</li>
+                            <li>Share your app without sharing Access</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">What You'll Need</h3></div>
+                    <div class="step-content">
+                        <ul class="instruction-list">
+                            <li><strong>Visual Studio</strong> (free Community edition is fine)</li>
+                            <li>Your <strong>Access database file</strong> (.accdb)</li>
+                            <li>Basic C# knowledge</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            // Lesson 19: Connection Strings
+            {
+                badge: "💻 Module 7 • C# Connection",
+                title: "Connection Strings",
+                intro: "Learn how to tell C# where your database is!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">What is a Connection String?</h3></div>
+                    <div class="step-content">
+                        <p>A <strong>connection string</strong> is like an address that tells your program where to find the database.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">The Access Connection String</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# Code</span></div>
+                            <code><span class="keyword">using</span> System.Data.OleDb;
+
+<span class="comment">// Connection string for Access database</span>
+<span class="keyword">string</span> connectionString = 
+    <span class="string">@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=MyFirstDatabase.accdb"</span>;</code>
+                        </div>
+                        <div class="tip-box">
+                            <h4>💡 Breaking It Down</h4>
+                            <p><strong>Provider=Microsoft.ACE.OLEDB.12.0</strong> = Use the Access driver<br>
+                            <strong>Data Source=</strong> = Path to your .accdb file</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Test the Connection</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Test Connection</span></div>
+                            <code><span class="keyword">try</span>
+{
+    <span class="keyword">using</span> (OleDbConnection conn = <span class="keyword">new</span> OleDbConnection(connectionString))
+    {
+        conn.Open();
+        MessageBox.Show(<span class="string">"Connected successfully!"</span>);
+    }
+}
+<span class="keyword">catch</span> (Exception ex)
+{
+    MessageBox.Show(<span class="string">"Error: "</span> + ex.Message);
+}</code>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 20: Reading Data
+            {
+                badge: "💻 Module 7 • C# Connection",
+                title: "Reading Data",
+                intro: "Get data from your Access database into C#!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">The Basic Pattern</h3></div>
+                    <div class="step-content">
+                        <ul class="instruction-list">
+                            <li>Open connection</li>
+                            <li>Create command with SQL query</li>
+                            <li>Execute and read results</li>
+                            <li>Close connection</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Read All Students</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Read Data</span></div>
+                            <code><span class="keyword">string</span> query = <span class="string">"SELECT * FROM tblStudents"</span>;
+
+<span class="keyword">using</span> (OleDbConnection conn = <span class="keyword">new</span> OleDbConnection(connectionString))
+{
+    conn.Open();
+    OleDbCommand cmd = <span class="keyword">new</span> OleDbCommand(query, conn);
+    OleDbDataReader reader = cmd.ExecuteReader();
+    
+    <span class="keyword">while</span> (reader.Read())
+    {
+        <span class="keyword">string</span> name = reader[<span class="string">"FirstName"</span>].ToString();
+        Console.WriteLine(name);
+    }
+    reader.Close();
+}</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">Load into DataGridView</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Fill DataGridView</span></div>
+                            <code><span class="keyword">using</span> (OleDbConnection conn = <span class="keyword">new</span> OleDbConnection(connectionString))
+{
+    OleDbDataAdapter adapter = <span class="keyword">new</span> OleDbDataAdapter(query, conn);
+    DataTable dt = <span class="keyword">new</span> DataTable();
+    adapter.Fill(dt);
+    
+    dataGridView1.DataSource = dt;
+}</code>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // Lesson 21: Insert, Update, Delete
+            {
+                badge: "💻 Module 7 • C# Connection",
+                title: "Insert, Update, Delete",
+                intro: "Learn to add, change, and remove data from C#!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">INSERT - Add New Data</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Insert</span></div>
+                            <code><span class="keyword">string</span> query = <span class="string">"INSERT INTO tblStudents (FirstName, LastName, GradeLevel) "</span> +
+               <span class="string">"VALUES (?, ?, ?)"</span>;
+
+OleDbCommand cmd = <span class="keyword">new</span> OleDbCommand(query, conn);
+cmd.Parameters.AddWithValue(<span class="string">"@fn"</span>, <span class="string">"John"</span>);
+cmd.Parameters.AddWithValue(<span class="string">"@ln"</span>, <span class="string">"Doe"</span>);
+cmd.Parameters.AddWithValue(<span class="string">"@gr"</span>, <span class="number">10</span>);
+cmd.ExecuteNonQuery();</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">UPDATE - Change Data</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Update</span></div>
+                            <code><span class="keyword">string</span> query = <span class="string">"UPDATE tblStudents SET GradeLevel = ? WHERE StudentID = ?"</span>;
+
+OleDbCommand cmd = <span class="keyword">new</span> OleDbCommand(query, conn);
+cmd.Parameters.AddWithValue(<span class="string">"@grade"</span>, <span class="number">11</span>);
+cmd.Parameters.AddWithValue(<span class="string">"@id"</span>, <span class="number">1</span>);
+cmd.ExecuteNonQuery();</code>
+                        </div>
+                        <div class="warning-box"><h4>⚠️ Always Include WHERE!</h4><p>Without WHERE, you'll update EVERY record!</p></div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">3</div><h3 class="step-title">DELETE - Remove Data</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">C# - Delete</span></div>
+                            <code><span class="keyword">string</span> query = <span class="string">"DELETE FROM tblStudents WHERE StudentID = ?"</span>;
+
+OleDbCommand cmd = <span class="keyword">new</span> OleDbCommand(query, conn);
+cmd.Parameters.AddWithValue(<span class="string">"@id"</span>, studentIdToDelete);
+cmd.ExecuteNonQuery();</code>
+                        </div>
+                        <div class="warning-box"><h4>⚠️ Be Very Careful!</h4><p>DELETE cannot be undone! Always confirm with user first.</p></div>
+                    </div>
+                </div>`
+            },
+            // Lesson 22: Complete Example
+            {
+                badge: "💻 Module 7 • C# Connection",
+                title: "Complete Example Project",
+                intro: "Let's put it all together in one complete example!",
+                content: `
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">1</div><h3 class="step-title">Database Helper Class</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">DatabaseHelper.cs</span></div>
+                            <code><span class="keyword">public class</span> <span class="function">DatabaseHelper</span>
+{
+    <span class="keyword">private string</span> connectionString = 
+        <span class="string">@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=MyFirstDatabase.accdb"</span>;
+
+    <span class="keyword">public</span> DataTable <span class="function">GetAllStudents</span>()
+    {
+        DataTable dt = <span class="keyword">new</span> DataTable();
+        <span class="keyword">string</span> query = <span class="string">"SELECT * FROM tblStudents ORDER BY LastName"</span>;
+        
+        <span class="keyword">using</span> (OleDbConnection conn = <span class="keyword">new</span> OleDbConnection(connectionString))
+        {
+            OleDbDataAdapter adapter = <span class="keyword">new</span> OleDbDataAdapter(query, conn);
+            adapter.Fill(dt);
+        }
+        <span class="keyword">return</span> dt;
+    }
+
+    <span class="keyword">public bool</span> <span class="function">AddStudent</span>(<span class="keyword">string</span> firstName, <span class="keyword">string</span> lastName, <span class="keyword">int</span> grade)
+    {
+        <span class="keyword">string</span> query = <span class="string">"INSERT INTO tblStudents (FirstName, LastName, GradeLevel) VALUES (?, ?, ?)"</span>;
+        
+        <span class="keyword">using</span> (OleDbConnection conn = <span class="keyword">new</span> OleDbConnection(connectionString))
+        {
+            conn.Open();
+            OleDbCommand cmd = <span class="keyword">new</span> OleDbCommand(query, conn);
+            cmd.Parameters.AddWithValue(<span class="string">"@fn"</span>, firstName);
+            cmd.Parameters.AddWithValue(<span class="string">"@ln"</span>, lastName);
+            cmd.Parameters.AddWithValue(<span class="string">"@gr"</span>, grade);
+            <span class="keyword">return</span> cmd.ExecuteNonQuery() > <span class="number">0</span>;
+        }
+    }
+}</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">2</div><h3 class="step-title">Using in Your Form</h3></div>
+                    <div class="step-content">
+                        <div class="code-block">
+                            <div class="code-block-header"><span class="code-block-title">Form1.cs</span></div>
+                            <code><span class="keyword">private</span> DatabaseHelper db = <span class="keyword">new</span> DatabaseHelper();
+
+<span class="keyword">private void</span> <span class="function">LoadStudents</span>()
+{
+    dataGridView1.DataSource = db.GetAllStudents();
+}
+
+<span class="keyword">private void</span> <span class="function">btnAdd_Click</span>(<span class="keyword">object</span> sender, EventArgs e)
+{
+    <span class="keyword">if</span> (db.AddStudent(txtFirstName.Text, txtLastName.Text, 
+        <span class="keyword">int</span>.Parse(txtGrade.Text)))
+    {
+        MessageBox.Show(<span class="string">"Student added!"</span>);
+        LoadStudents();
+    }
+}</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="completion-badge" style="background: linear-gradient(135deg, #6B46C1, #805AD5); font-size: 1.1rem;">
+                    🎉 CONGRATULATIONS! 🎉<br>You've completed the entire Microsoft Access Tutorial!
+                </div>
+                <div class="step-card">
+                    <div class="step-header"><div class="step-number">✓</div><h3 class="step-title">What You've Learned</h3></div>
+                    <div class="step-content">
+                        <ul class="instruction-list">
+                            <li>✅ What databases are and why we use them</li>
+                            <li>✅ Creating and managing tables</li>
+                            <li>✅ Understanding data types and primary keys</li>
+                            <li>✅ Building relationships between tables</li>
+                            <li>✅ Writing queries (design view and SQL!)</li>
+                            <li>✅ Creating forms and professional reports</li>
+                            <li>✅ Exporting data to Excel, PDF, and CSV</li>
+                            <li>✅ Connecting Access to C# applications</li>
+                            <li>✅ CRUD operations (Create, Read, Update, Delete)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tip-box">
+                    <h4>🚀 What's Next?</h4>
+                    <p>Keep practicing! Try building your own database project - maybe a music collection, recipe book, or inventory system!</p>
+                </div>`
+            }
+        ];
+
+        let currentLesson = 0;
+
+        function showLesson(index) {
+            currentLesson = index;
+            const lesson = lessons[index];
+            
+            document.getElementById('lessonContent').innerHTML = `
+                <div class="lesson active">
+                    <div class="lesson-header">
+                        <div class="lesson-badge">${lesson.badge}</div>
+                        <h1 class="lesson-title">${lesson.title}</h1>
+                        <p class="lesson-intro">${lesson.intro}</p>
+                    </div>
+                    ${lesson.content}
+                    <div class="nav-buttons">
+                        <button class="nav-btn prev" onclick="prevLesson()" ${index === 0 ? 'disabled' : ''}>← Previous</button>
+                        <button class="nav-btn next" onclick="nextLesson()">${index === lessons.length - 1 ? '🔄 Start Over' : 'Next →'}</button>
+                    </div>
+                </div>
+            `;
+            
+            // Update sidebar
+            document.querySelectorAll('.nav-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Update progress
+            const progress = ((index + 1) / lessons.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${index + 1}/${lessons.length}`;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            document.getElementById('sidebar').classList.remove('open');
+        }
+
+        function nextLesson() {
+            if (currentLesson < lessons.length - 1) {
+                showLesson(currentLesson + 1);
+            } else {
+                showLesson(0);
+            }
+        }
+
+        function prevLesson() {
+            if (currentLesson > 0) {
+                showLesson(currentLesson - 1);
+            }
+        }
+
+        function checkAnswer(element, isCorrect) {
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            if (isCorrect) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('incorrect');
+                setTimeout(() => {
+                    document.querySelectorAll('.quiz-option').forEach(opt => {
+                        if (opt.onclick.toString().includes('true')) {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }, 500);
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Initialize
+        showLesson(0);
+    </script>
+</body>
+</html>
